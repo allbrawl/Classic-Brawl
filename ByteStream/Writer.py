@@ -12,6 +12,11 @@ class Writer:
     def writeUInteger(self, integer: int, length: int = 1):
         self.buffer += integer.to_bytes(length, self.endian, signed=False)
 
+    def writeIntList(self, intList: list):
+        self.writeVInt(len(intList))
+        for int in intList:
+            self.writeVInt(int)
+
     def writeLong(self, data):
         self.writeInt(data, 8)
 
@@ -76,6 +81,7 @@ class Writer:
             pass
 
     def writeVInt(self, data, rotate: bool = True):
+        if data <= -1: data = -65 - (data)
         final = b''
         if data == 0:
             self.writeByte(0)

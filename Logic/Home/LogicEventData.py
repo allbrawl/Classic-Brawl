@@ -1,43 +1,32 @@
 import json
 
 class LogicEventData:
-    events = json.loads(open("events.json", 'r').read())
 
-    def encode(self):
+    def encode(byteStream):
         events = json.loads(open("events.json", 'r').read())
 
-        self.writeVInt(len(events))
-        for i in range(len(events)):
-            self.writeVInt(i)
+        byteStream.writeVInt(24) # Event Slots Amount
+        for i in range(24):
+            byteStream.writeVInt(i + 1)
 
-        self.writeVInt(len(events))
-
+        byteStream.writeVInt(len(events)) # Available Events
         for event in events:
-            self.writeVInt(events.index(event) + 1)
-            self.writeVInt(events.index(event) + 1)
-            self.writeVInt(event['Ended'])
-            self.writeVInt(event['Timer'])
+            byteStream.writeVInt(0) # Event Index in Teams
+            byteStream.writeVInt(event.get("Index", 1)) # Event Index
+            byteStream.writeVInt(event.get("NewEventTimer", 0)) # Time until New Event
+            byteStream.writeVInt(event.get("Timer", 0)) # Event Timer
 
-            self.writeVInt(0)
-            self.writeDataReference(15, event['ID'])
+            byteStream.writeVInt(event.get("TokenReward", 0)) # Token rewards after "NEW EVENT" is tapped
+            byteStream.writeDataReference(15, event.get("LocationID", 0)) # LocationID
 
-            self.writeVInt(event['Status'])
+            byteStream.writeVInt(event.get("Status", 2)) # Event Status (1 = NEW EVENT, 2 = normal, 3 = Star Token)
 
-            self.writeString()
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeVInt(0)
+            byteStream.writeString(event.get("TextEntry", None))
+            byteStream.writeVInt(0)
+            byteStream.writeVInt(0)
+            byteStream.writeVInt(0)
+            byteStream.writeIntList(event.get("Modifiers", [])) # Event Modifiers
+            byteStream.writeVInt(0) # Special Events Difficulty
+            byteStream.writeVInt(event.get("ChallengeType", 0))
 
-            if event['Modifier'] > 0:
-                self.writeBoolean(True)
-                self.writeVInt(event['Modifier'])
-            else:
-                self.writeBoolean(False)
-
-            self.writeVInt(0)
-            self.writeVInt(0)
-
-
-        self.writeVInt(0)
-        for x in range(0):
-            pass
+        byteStream.writeVInt(0) # Coming Up Events

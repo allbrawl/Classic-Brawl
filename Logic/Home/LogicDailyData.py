@@ -1,60 +1,57 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from Logic.Home.LogicShopData import LogicShopData
 
 class LogicDailyData:
 
     def encode(self):
+        UTCNow = datetime.now(timezone.utc)
 
-        time_stamp = int(datetime.timestamp(datetime.now()))
+        self.writeVInt(UTCNow.year * 1000 + UTCNow.timetuple().tm_yday) # Current Year and Day
+        self.writeVInt(UTCNow.hour * 3600 + UTCNow.minute * 60 + UTCNow.second) # Time left for the next day
 
-        self.writeVInt(time_stamp)
-        self.writeVInt(time_stamp)
+        self.writeVInt(self.player.trophies) # Player Trophies
+        self.writeVInt(self.player.high_trophies) # Player Highest Trophies
+        self.writeVInt(0) # Player Daily High Trophies
 
-        self.writeVInt(self.player.trophies)
-        self.writeVInt(self.player.high_trophies)
-        self.writeVInt(self.player.high_trophies)
+        self.writeVInt(self.player.trophy_reward) # Trophy Road Rewards Collected
+        self.writeVInt(self.player.exp_points) # Player Experience Points
 
-        self.writeVInt(self.player.trophy_reward)
-        self.writeVInt(self.player.exp_points)
+        self.writeDataReference(28, self.player.profile_icon) # Player Profile Icon
+        self.writeDataReference(43, self.player.name_color) # Player Name Color
 
-        self.writeDataReference(28, self.player.profile_icon)
-        self.writeDataReference(43, self.player.name_color)
+        self.writeIntList([]) # Played Gamemodes
 
-        self.writeVInt(50)
-        for x in range(50):
-            self.writeVInt(x)
-
-        self.writeVInt(len(self.player.selected_skins))
+        self.writeVInt(len(self.player.selected_skins)) # Selected Characters Skins
         for x in self.player.selected_skins:
             self.writeDataReference(29, self.player.selected_skins[x])
 
-        self.writeVInt(len(self.player.unlocked_skins))
+        self.writeVInt(len(self.player.unlocked_skins)) # Unlocked Skins
         for x in self.player.unlocked_skins:
             self.writeDataReference(29, x)
 
         self.writeVInt(0)  # Unknown Array
         for x in range(0):
-            self.writeDataReference(0,0)
+            self.writeDataReference(0, 0)
 
-        self.writeVInt(0)      # Leaderboard Global TID
-        self.writeVInt(50000)  # Trophy Road Reached Icon
-        self.writeVInt(0)      # Unknown
+        self.writeVInt(0) # Leaderboard Default Region
+        self.writeVInt(self.player.high_trophies) # Trophy Road Highest Icon Reached
+        self.writeVInt(0) # Tokens used in Battles
 
+        self.writeUInt8(0) # Token Limit Reached
+        self.writeVInt(0) # Control Mode (Unused, 2017 feature)
         self.writeUInt8(0)
-        self.writeVInt(0)
-        self.writeUInt8(0)
 
-        self.writeVInt(self.player.token_doubler)
-        self.writeVInt(99999)  # Trophy Road Timer
-        self.writeVInt(0)      # Power Play Timer
-        self.writeVInt(99999)  # Brawl Pass Timer
+        self.writeVInt(self.player.token_doubler) # Token Doublers left
+        self.writeVInt(99999) # Trophy Road Timer
+        self.writeVInt(99999) # Power Play Timer
+        self.writeVInt(99999) # Brawl Pass Timer
 
-        self.writeVInt(0)  # Unknown
+        self.writeVInt(0) # ForcedDrops::encode
 
-        self.writeBoolean(False)
-        self.writeBoolean(False)
+        self.writeBoolean(False) # TimedOffer::encode 1?
+        self.writeBoolean(False) # TimedOffer::encode 2?
 
-        self.writeUInt8(8) # Shop Token Doubler
+        self.writeUInt8(8) # Shop Token Doubler State
 
         self.writeVInt(2) # Unknown
         self.writeVInt(2) # Unknown
@@ -63,55 +60,45 @@ class LogicDailyData:
         self.writeVInt(0) # Name Change Cost
         self.writeVInt(0) # Name Change Timer
 
-
         LogicShopData.encodeShopOffers(self)
 
-        self.writeVInt(0)  # AdStatus
-        for x in range(0):
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeVInt(0)
+        self.writeVInt(0) # AdStatus::encode
 
         self.writeVInt(200) # Available Battle Tokens
-        self.writeVInt(0)   # Time till Bonus Tokens
+        self.writeVInt(0) # Time till Tokens refill (20)
 
-        self.writeVInt(0)  # Unknown Array
-        for x in range(0):
-            self.writeVInt(x)
+        self.writeIntList([]) # Tickets Purchased Index
 
-        self.writeVInt(self.player.tickets)
-        self.writeVInt(0)  # Unknown
+        self.writeVInt(self.player.tickets) # Player Tickets Amount
+        self.writeVInt(0) # Unknown
 
-        self.writeDataReference(16, self.player.home_brawler)
+        self.writeDataReference(16, self.player.home_brawler) # Selected Character
 
-        self.writeString(self.player.region)
-        self.writeString(self.player.content_creator)
+        self.writeString(self.player.region) # Player Region
+        self.writeString(self.player.content_creator) # Supported Content Creator
 
-        self.writeVInt(0)  # Unknown Array
+        self.writeVInt(0) # IntValueEntry::encode
         for x in range(0):
             self.writeInt(0)
             self.writeInt(0)
 
-        self.writeVInt(0)  # CooldownEntry
+        self.writeVInt(0) # CooldownEntry::encode
         for x in range(0):
             self.writeVInt(0)
-            self.writeDataReference(0, 0)
+            self.writeDataReference(0, 0) # Item Locked
             self.writeVInt(0)
 
-        self.writeVInt(0)  # BrawlPassSeasonData
+        self.writeVInt(0) # BrawlPassSeasonData::encode
         for x in range(0):
             pass
 
-        self.writeVInt(0)  # ProLeagueSeasonData
+        self.writeVInt(0) # ProLeagueSeasonData::encode
         for x in range(0):
             self.writeVInt(0)
             self.writeVInt(0)
 
-        self.writeBoolean(True) # LogicQuests
-        if True:
-            self.writeVInt(0)
-            for x in range(0):
-                pass
+        self.writeBoolean(True) # LogicQuests::encode
+        self.writeVInt(0) # Quests Count
 
 
 

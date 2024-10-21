@@ -5,16 +5,13 @@ from Logic.Home.LogicShopData import LogicShopData
 class LogicConfData:
 
     def encode(self):
-
         LogicShopData.encodeShopResources(self)
 
         self.writeVInt(500)    # Unknown
         self.writeVInt(50)     # Unknown
         self.writeVInt(999900) # Unknown
 
-        self.writeVInt(0)
-        for x in range(0):
-            self.writeVInt(x)
+        self.writeIntList([]) # Brawler Boxes Cost
 
         LogicEventData.encode(self)
 

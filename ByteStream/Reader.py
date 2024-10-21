@@ -14,6 +14,14 @@ class Reader(BufferedReader):
     def readVInt(self):
         n = self._read_varint(True)
         return (n >> 1) ^ (-(n & 1))
+    
+    def readIntList(self) -> list:
+        intList = []
+        length = self.readVInt()
+        for x in range(length):
+            intList.append(self.readVInt())
+        
+        return intList
 
     def readShort(self, length=2):
         return int.from_bytes(self.read(length), "big")
@@ -76,12 +84,12 @@ class Reader(BufferedReader):
     def readString(self):
         length = self.readInt()
         if length == pow(2, 32) - 1:
-            return b""
+            return ""
         else:
             try:
                 decoded = self.read(length)
             except MemoryError:
-                raise IndexError("String out of range!")
+                raise IndexError("String length too high/out of range!")
             else:
                 return decoded.decode('utf-8')
 
@@ -91,4 +99,4 @@ class Reader(BufferedReader):
     def readLogicLong(self):
         x = self.readVInt()
         y = self.readVInt()
-        return x, y
+        return [x, y]
