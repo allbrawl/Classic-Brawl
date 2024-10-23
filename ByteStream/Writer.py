@@ -81,10 +81,10 @@ class Writer:
             pass
 
     def writeVInt(self, data, rotate: bool = True):
-        if data <= -1: data = -65 - (data)
         final = b''
         if data == 0:
             self.writeByte(0)
+        elif data <= -1: self.writeVInt((2147483648 * 2) + data)
         else:
             data = (data << 1) ^ (data >> 31)
             while data:
@@ -105,11 +105,9 @@ class Writer:
         self.buffer += final
 
     def writeDataReference(self, x, y=0):
-        if x != 0:
-            self.writeVInt(x)
+        self.writeVInt(x)
+        if x > 0:
             self.writeVInt(y)
-        else:
-            self.writeVInt(0)
 
 
     def writeString(self, string: str = None):
