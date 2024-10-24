@@ -1,6 +1,7 @@
 import json
 
 class LogicEventData:
+    events = json.loads(open("events.json", 'r').read())
 
     def encode(byteStream):
         events = json.loads(open("events.json", 'r').read())
@@ -22,9 +23,9 @@ class LogicEventData:
             byteStream.writeVInt(event.get("Status", 2)) # Event Status (1 = NEW EVENT, 2 = normal, 3 = Star Token)
 
             byteStream.writeString(event.get("TextEntry", None))
-            byteStream.writeVInt(0)
-            byteStream.writeVInt(0)
-            byteStream.writeVInt(0)
+            byteStream.writeVInt(0) # Boxes Purchased
+            byteStream.writeVInt(0) # Power Play Games Played
+            byteStream.writeVInt(0) # Power Play Games Left
             byteStream.writeIntList(event.get("Modifiers", [])) # Event Modifiers
             byteStream.writeVInt(0) # Special Events Difficulty
             byteStream.writeVInt(event.get("ChallengeType", 0))
