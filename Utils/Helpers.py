@@ -76,7 +76,6 @@ class Helpers:
         self.player.home_brawler = player_data['SelectedBrawler']
         self.player.region = player_data['Region']
         self.player.content_creator = player_data['SupportedContentCreator']
-        self.player.bp_activated = player_data['BrawlPassActivated']
 
 
     def load_club(self, club_data):
