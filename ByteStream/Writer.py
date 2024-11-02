@@ -19,15 +19,14 @@ class Writer:
 
     def writeLong(self, data):
         self.writeInt(data, 8)
+    
+    def writeLongTest(self, high: int, low: int):
+        self.writeInt(high)
+        self.writeInt(low)
 
     def writeLogicLong(self, data):
         self.writeVInt(0)
         self.writeVInt(data)
-
-    def writeArrayVint(self, data):
-        self.writeVInt(len(data))
-        for x in data:
-            self.writeVInt(x)
 
     def writeUInt8(self, integer: int):
         self.writeUInteger(integer)
@@ -38,11 +37,15 @@ class Writer:
     def writeInt16(self, data):
         self.writeInt(data, 2)
 
-    def writeBool(self, boolean: bool):
-        if boolean:
-            self.writeUInt8(1)
-        else:
-            self.writeUInt8(0)
+    def writeBoolean(self, *args):
+        boolean = 0
+        i = 0
+        for value in args:
+            if value:
+                boolean |= 1 << i
+            i += 1
+            
+        self.writeByte(boolean)
 
     def writeHexa(self, data):
         if data:
@@ -147,5 +150,4 @@ class Writer:
     def writeBytes(self, data):
         self.buffer += data
 
-    writeBoolean = writeBool
     writeInt32   = writeInt

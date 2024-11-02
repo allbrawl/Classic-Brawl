@@ -11,6 +11,7 @@ class Helpers:
     blue = Fore.LIGHTBLUE_EX
     cyan = Fore.CYAN
     red = Fore.RED
+    reset = Fore.RESET
 
     def randomToken(self):
         lettersAndDigits = string.ascii_letters + string.digits
@@ -53,7 +54,7 @@ class Helpers:
             json.dump(settings, config_file)
 
     def load_account(self, player_data):
-        self.player.name_set = player_data['NameSet']
+        self.player.name_set = player_data['Registered']
         self.player.name = player_data['Name']
         self.player.trophies = player_data['Trophies']
         self.player.gems = player_data['Gems']
@@ -72,15 +73,10 @@ class Helpers:
         self.player.unlocked_skins = player_data['UnlockedSkins']
         self.player.selected_skins = player_data['SelectedSkins']
         self.player.tickets = player_data['Tickets']
-        self.player.home_brawler = player_data['HomeBrawler']
+        self.player.home_brawler = player_data['SelectedBrawler']
         self.player.region = player_data['Region']
         self.player.content_creator = player_data['SupportedContentCreator']
         self.player.bp_activated = player_data['BrawlPassActivated']
-        self.player.starpower = player_data['StarPower']
-        self.player.gadget = player_data['Gadget']
-        self.player.welcome_msg_viewed = player_data['WelcomeMessageViewed']
-        self.player.club_id = player_data['ClubID']
-        self.player.club_role = player_data['ClubRole']
 
 
     def load_club(self, club_data):

@@ -30,8 +30,8 @@ class Reader(BufferedReader):
         return int.from_bytes(self.read(length), "big")
 
     def readLong(self):
-        return self.readInt(8)
-
+        return [self.readInt(), self.readInt()]
+    
     def readUInt8(self) -> int:
         return self.readUInteger()
 
@@ -75,10 +75,10 @@ class Reader(BufferedReader):
 
     def readDataReference(self):
         a = self.readVInt()
-        if a != 0:
+        if a > 0:
             b = self.readVInt()
         else:
-            b = -1
+            return [a, 0]
         return a, b
 
     def readString(self):

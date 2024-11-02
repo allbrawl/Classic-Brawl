@@ -43,7 +43,7 @@ class PlayerProfileMessage(Writer):
             club_data = self.db.load_club(self.player_data['ClubID'])
 
             self.writeBoolean(True)
-            self.writeLong(club_data['ID'])
+            self.writeLong(0, club_data['ID'])
             self.writeString(club_data['Name'])
             self.writeDataReference(8, club_data['BadgeID'])
             self.writeVInt(club_data['Type'])

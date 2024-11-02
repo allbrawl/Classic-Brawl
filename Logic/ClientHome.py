@@ -7,7 +7,7 @@ class LogicClientHome:
         LogicDailyData.encode(self)
         LogicConfData.encode(self)
 
-        self.writeLong(self.player.ID)
+        self.writeLongTest(0, self.player.ID)
 
         self.writeVInt(0)  # Unknown Array
         for x in range(0):

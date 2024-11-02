@@ -1,7 +1,6 @@
 from ByteStream.Writer import Writer
 
 class LobbyInfoMessage(Writer):
-
     def __init__(self, client, player, count):
         super().__init__(client)
         self.id = 23457
@@ -9,13 +8,7 @@ class LobbyInfoMessage(Writer):
         self.count = count
 
     def encode(self):
-        self.writeVInt(self.count)
+        self.writeVInt(self.count) # Players Online
         self.writeString("Classic Brawl v2.0")
 
-        self.writeVInt(0) # array
-        for x in range(0):
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeVInt(0)
-            self.writeVInt(0)
+        self.writeVInt(0) # Lobby Info Entry Count

@@ -5,8 +5,8 @@ from Logic.Player import Player
 from Logic.Device import Device
 from Utils.Helpers import Helpers
 from Protocol.LogicLaserMessageFactory import packets
-from Protocol.Messages.Server.LobbyInfoMessage import LobbyInfoMessage
 from Protocol.Messages.Server.LoginFailedMessage import LoginFailedMessage
+from DataBase.Database import Database
 
 def _(*args):
     for arg in args:
@@ -15,11 +15,11 @@ def _(*args):
 
 
 class ClientThread(Thread):
-    def __init__(self, client, address, db):
+    def __init__(self, client, address):
         super().__init__()
         self.client = client
         self.address = address
-        self.db = db
+        self.db = Database
         self.config = json.loads(open('config.json', 'r').read())
         self.device = Device(self.client)
         self.player = Player(self.device)
@@ -41,6 +41,7 @@ class ClientThread(Thread):
 
 
     def run(self):
+        self.db = self.db()
         try:
             last_packet = time.time()
             while True:
@@ -76,7 +77,6 @@ class ClientThread(Thread):
                 if time.time() - last_packet > 10:
                     _(f"{Helpers.cyan}[DEBUG] Client disconnected! IP: {self.address[0]}")
                     self.client.close()
-                    _(f"{Helpers.cyan}[DEBUG] Client disconnected! IP: {self.address[0]}")
                     Helpers.connected_clients['ClientsCount'] -= 1
                     break
 

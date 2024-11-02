@@ -3,6 +3,7 @@ import json
 class LogicEventData:
     events = json.loads(open("events.json", 'r').read())
 
+    @staticmethod
     def encode(byteStream):
         events = json.loads(open("events.json", 'r').read())
 
