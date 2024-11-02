@@ -2,7 +2,7 @@
 
 Simple Brawl Stars v26.184 server emulator written in Python.
 
-![ScreenShot](https://cdn.discordapp.com/attachments/704364452891590778/789482341209866280/Screenshot_20201218-151815_Brawl_Client.jpg) 
+![ScreenShot](screenshot.png) 
 
 ### Requirements:
 - Python 3.7 or higher
