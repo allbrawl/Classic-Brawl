@@ -3,6 +3,7 @@ from Logic.Home.LogicShopData import LogicShopData
 
 class LogicDailyData:
 
+    @staticmethod
     def encode(self):
         UTCNow = datetime.now(timezone.utc)
 
