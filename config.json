@@ -1,5 +1,6 @@
 {
   "MongoConnectionURL": "",
+  "ClubWarsEnabled": true,
   "StarPoints": 5000,
   "Tickets": 7000,
   "Gold": 10000,
@@ -16,7 +17,5 @@
   "SecondsTillMaintenanceOver": 3600,
   "Patch": false,
   "PatchURL": "http://192.168.0.103:8080/",
-  "UpdateURL": "",
-  "BrawlBoxRequirement": 100,
-  "BigBoxRequirement": 10
+  "UpdateURL": ""
 }

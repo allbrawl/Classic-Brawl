@@ -26,14 +26,14 @@ class Player:
     tickets = settings['Tickets']
     gems = settings['Gems']
     resources = [{'ID': 1, 'Amount': settings['BrawlBoxTokens']}, {'ID': 8, 'Amount': settings['Gold']}, {'ID': 9, 'Amount': settings['BigBoxTokens']}, {'ID': 10, 'Amount': settings['StarPoints']}]
-    high_trophies = 999999
-    trophy_reward = 300
+    high_trophies = settings["Trophies"]
+    trophy_reward = 1
     exp_points = settings['ExperiencePoints']
     profile_icon = 0
     name_color = 0
     selected_brawler = 0
     region = settings['Region']
-    content_creator = "Modern Brawl"
+    content_creator = "Classic Brawl"
     name_set = False
     name = 'Guest'
     map_id = 0
@@ -55,6 +55,7 @@ class Player:
     patch_url = settings['PatchURL']
     patch_sha = Fingerprint.loadFinger("GameAssets/fingerprint.json")
     update_url = settings['UpdateURL']
+    clubWarsEnabled = settings["ClubWarsEnabled"] # Inefficient but the easiest i can do right now
 
     delivery_items = {}
     box_rewards = {}
@@ -63,7 +64,7 @@ class Player:
 
     battle_tick = 0
 
-    unlocked_skins = skins_id
+    unlocked_skins = []#skins_id
 
     selected_skins = {}
     for id in brawlers_id:
