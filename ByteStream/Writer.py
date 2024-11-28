@@ -1,4 +1,5 @@
 from Utils.Helpers import Helpers
+import traceback
 
 class Writer:
     def __init__(self, client, endian: str = 'big'):
@@ -12,21 +13,17 @@ class Writer:
     def writeUInteger(self, integer: int, length: int = 1):
         self.buffer += integer.to_bytes(length, self.endian, signed=False)
 
-    def writeIntList(self, intList: list):
-        self.writeVInt(len(intList))
-        for int in intList:
-            self.writeVInt(int)
-
     def writeLong(self, data):
         self.writeInt(data, 8)
-    
-    def writeLongTest(self, high: int, low: int):
-        self.writeInt(high)
-        self.writeInt(low)
 
     def writeLogicLong(self, data):
         self.writeVInt(0)
         self.writeVInt(data)
+
+    def writeArrayVint(self, data):
+        self.writeVInt(len(data))
+        for x in data:
+            self.writeVInt(x)
 
     def writeUInt8(self, integer: int):
         self.writeUInteger(integer)
@@ -37,15 +34,11 @@ class Writer:
     def writeInt16(self, data):
         self.writeInt(data, 2)
 
-    def writeBoolean(self, *args):
-        boolean = 0
-        i = 0
-        for value in args:
-            if value:
-                boolean |= 1 << i
-            i += 1
-            
-        self.writeByte(boolean)
+    def writeBool(self, boolean: bool):
+        if boolean:
+            self.writeUInt8(1)
+        else:
+            self.writeUInt8(0)
 
     def writeHexa(self, data):
         if data:
@@ -55,17 +48,20 @@ class Writer:
             self.buffer += bytes.fromhex(''.join(data.split()).replace('-', ''))
 
     def send(self):
-        self.encode()
-        packet = self.buffer
-        self.buffer = self.id.to_bytes(2, 'big', signed=True)
-        self.writeInt(len(packet), 3)
-        if hasattr(self, 'version'):
-            self.writeInt16(self.version)
-        else:
-            self.writeInt16(0)
-        self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
-        self.client.send(self.buffer)
-        print(f'{Helpers.yellow}[SERVER] PacketID: {self.id}, Name: {type(self).__name__}, Length: {len(self.buffer)}')
+        try:
+            self.encode()
+            packet = self.buffer
+            self.buffer = self.id.to_bytes(2, 'big', signed=True)
+            self.writeInt(len(packet), 3)
+            if hasattr(self, 'version'):
+                self.writeInt16(self.version)
+            else:
+                self.writeInt16(0)
+            self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
+            self.client.send(self.buffer)
+            print(f'{Helpers.yellow}[SERVER] PacketID: {self.id}, Name: {type(self).__name__}, Length: {len(self.buffer)}')
+        except Exception:
+            print(traceback.format_exc())
 
 
     def sendByID(self, ID):
@@ -80,14 +76,13 @@ class Writer:
                 self.writeInt16(0)
             self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
             Helpers.connected_clients["Clients"][str(ID)]["SocketInfo"].send(self.buffer)
-        except:
-            pass
+        except Exception:
+            print(traceback.format_exc())
 
     def writeVInt(self, data, rotate: bool = True):
         final = b''
         if data == 0:
             self.writeByte(0)
-        elif data <= -1: self.writeVInt((2147483648 * 2) + data)
         else:
             data = (data << 1) ^ (data >> 31)
             while data:
@@ -108,9 +103,11 @@ class Writer:
         self.buffer += final
 
     def writeDataReference(self, x, y=0):
-        self.writeVInt(x)
-        if x > 0:
+        if x != 0:
+            self.writeVInt(x)
             self.writeVInt(y)
+        else:
+            self.writeVInt(0)
 
 
     def writeString(self, string: str = None):
@@ -150,4 +147,5 @@ class Writer:
     def writeBytes(self, data):
         self.buffer += data
 
+    writeBoolean = writeBool
     writeInt32   = writeInt

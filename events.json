@@ -45,12 +45,5 @@
       "Ended":false,
       "Timer": 99999,
       "Modifier":0
-   },
-   {
-      "ID":97,
-      "Status":3,
-      "Ended":false,
-      "Timer": 99999,
-      "Modifier":0
    }
 ]

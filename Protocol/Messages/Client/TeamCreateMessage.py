@@ -15,7 +15,7 @@ class TeamCreateMessage(Reader):
 
     def process(self, db):
         if self.map_slot != -64:
-            self.player.map_id = LogicEventData.events[self.map_slot - 1]['ID']
+            self.player.map_id = LogicEventData.events[self.map_slot - 1].get("LocationID", 0)
         else:
             self.player.map_id = 7
 

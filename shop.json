@@ -35,6 +35,20 @@
    ],
 
    "Offers": [
-
+      {
+         "Items": [
+            {
+               "OfferID": 6,
+               "Amount": 10
+            },
+            {
+               "OfferID": 1,
+               "Amount": 69
+            }
+         ],
+         "Cost": 15,
+         "OfferBackground": "offer_xmas",
+         "Title": "Welcome to Classic Brawl!"
+      }
    ]
 }

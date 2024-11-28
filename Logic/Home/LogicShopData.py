@@ -36,43 +36,40 @@ class LogicShopData:
         LogicShopData.encodeBoxes(self)
         LogicShopData.encodeTokenDoubler(self)
 
-
+    @staticmethod
     def encodeShopOffers(self):
         self.writeVInt(len(LogicShopData.offers))
         for x in LogicShopData.offers:
-            self.writeVInt(1) # array
-            for y in range(1):
-                self.writeVInt(x['OfferID'])
-                self.writeVInt(x['Multiplier'])
-                self.writeDataReference(x['DataReference'][0], x['DataReference'][1])
-                self.writeVInt(0)
+            self.writeVInt(len(x["Items"])) # array
+            for y in x["Items"]:
+                self.writeVInt(y["OfferID"])
+                self.writeVInt(y.get("Amount", 1))
+                self.writeDataReference(*y.get("CharacterID", [0, 0])) # Offer Character
+                self.writeVInt(y.get("ItemID", 0))
 
-            self.writeVInt(x['ShopType'])
+            self.writeVInt(x.get("Currency", 0))
 
-            self.writeVInt(x['Cost'])
-            self.writeVInt(x['Timer'])
+            self.writeVInt(x["Cost"])
+            self.writeVInt(x.get("Timer", 0))
 
             self.writeVInt(1)
             self.writeVInt(100)
             self.writeUInt8(0)
 
             self.writeUInt8(0)
-            self.writeVInt(x['ShopDisplay'])
+            self.writeVInt(x.get('ShopDisplay', 0))
             self.writeUInt8(0)
             self.writeVInt(0)
 
             self.writeInt(0)
-            self.writeStringReference(x['OfferText'])
+            self.writeStringReference(x.get("Title", "SPECIAL OFFER"))
 
             self.writeUInt8(0)
-            self.writeString()
+            self.writeString(x.get("OfferBackground", None))
             self.writeVInt(0)
             self.writeUInt8(0)
             # self.writeVInt(2)
             # self.writeVInt(0)
-
-
-
 
     def encodeBoxes(self):
         self.writeVInt(100) # Tokens for 1 Brawl Box

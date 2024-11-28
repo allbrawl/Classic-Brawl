@@ -15,8 +15,9 @@ class StartGameMessage(Reader):
         self.readVInt()
         self.map_slot = self.readVInt()
 
+
     def process(self, db):
-        self.player.map_id = LogicEventData.events[self.map_slot - 1]['LocationID']
+        self.player.map_id = LogicEventData.events[self.map_slot - 1].get("LocationID", 0)
 
         MatchMakingCancelledMessage(self.client, self.player).send()
         TeamMessage(self.client, self.player).send()

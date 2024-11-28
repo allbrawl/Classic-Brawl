@@ -2,6 +2,7 @@ from ByteStream.Reader import Reader
 from Utils.Helpers import Helpers
 from Logic.Home.LogicShopData import LogicShopData
 from Protocol.Messages.Server.AvailableServerCommandMessage import AvailableServerCommandMessage
+from Protocol.Commands.Server.LogicGiveDeliveryItemsCommand import LogicGiveDeliveryItemsCommand
 
 class LogicGatchaCommand(Reader):
     def __init__(self, client, player, initial_bytes):
@@ -17,7 +18,7 @@ class LogicGatchaCommand(Reader):
 
 
     def process(self, db):
-        self.player.delivery_items = {'Count': 1, 'Type': Helpers.get_box_type(self, self.box_id)}
+        self.player.delivery_items = {'Count': 1, 'DeliveryTypes': [Helpers.get_box_type(self, self.box_id)]}
 
         if self.box_id == 1:
             self.player.gems = self.player.gems - LogicShopData.boxes[0]['Cost']
@@ -27,7 +28,4 @@ class LogicGatchaCommand(Reader):
             db.update_player_account(self.player.token, 'Gems', self.player.gems)
 
         self.player.db = db
-        AvailableServerCommandMessage(self.client, self.player, 203).send()
-
-
-
+        AvailableServerCommandMessage(self.client, self.player, LogicGiveDeliveryItemsCommand).send()

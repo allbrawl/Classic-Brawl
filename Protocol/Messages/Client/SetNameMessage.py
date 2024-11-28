@@ -1,6 +1,7 @@
 from ByteStream.Reader import Reader
 from Protocol.Messages.Server.AvailableServerCommandMessage import AvailableServerCommandMessage
 from Protocol.Messages.Server.AvatarNameChangeFailedMessage import AvatarNameChangeFailedMessage
+from Protocol.Commands.Server.LogicChangeAvatarNameCommand import LogicChangeAvatarNameCommand
 
 class SetNameMessage(Reader):
     def __init__(self, client, player, initial_bytes):
@@ -18,7 +19,7 @@ class SetNameMessage(Reader):
                 self.player.name = self.username
                 db.update_player_account(self.player.token, 'Name', self.username)
                 db.update_player_account(self.player.token, 'NameSet', True)
-                AvailableServerCommandMessage(self.client, self.player, 201).send()
+                AvailableServerCommandMessage(self.client, self.player, LogicChangeAvatarNameCommand).send()
             else:
                 AvatarNameChangeFailedMessage(self.client, self.player).send()
         else:

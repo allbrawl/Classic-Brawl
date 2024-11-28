@@ -4,41 +4,41 @@ from Logic.Home.LogicBoxData import LogicBoxData
 class LogicGiveDeliveryItemsCommand(Writer):
 
     def encode(self):
+        if self.player.delivery_items["DeliveryTypes"] != [100]: # Check if there's other delivery types to reverse the order
+            self.player.delivery_items['DeliveryTypes'] = list(reversed(self.player.delivery_items['DeliveryTypes']))
 
         self.writeVInt(0)
-        self.writeVInt(self.player.delivery_items['Count']) # multiplier
+        self.writeVInt(len(self.player.delivery_items['DeliveryTypes'])) # Amount
 
-        for y in range(self.player.delivery_items['Count']):
+        for y in self.player.delivery_items['DeliveryTypes']:
             # DeliveryUnit
-            type = self.player.delivery_items['Type']
-            self.writeVInt(type)
-            if type != 100:
-                rewards = LogicBoxData.randomize(self, type)['Rewards']
+            self.writeVInt(y)
+            if y != 100:
+                rewards = LogicBoxData.randomize(self, y)['Rewards']
             else:
                 rewards = self.player.delivery_items['Items']
 
             self.writeVInt(len(rewards))
 
             for x in rewards:
-                # GatchaDrop
+                # GatchaDrop::encode
                 self.writeVInt(x['Amount'])
-                self.writeDataReference(x['DataRef'][0], x['DataRef'][1])
+                self.writeDataReference(*x.get("DataRef", [0, 0]))
                 self.writeVInt(x['Value'])
-                self.writeDataReference(0, 0)
-                self.writeDataReference(0, 0)
+                self.writeDataReference(*x.get("ItemID", [0, 0]))
+                self.writeDataReference(*x.get("SPGID", [0, 0]))
                 self.writeVInt(0)
 
-        self.writeBool(True) # ForcedDrops
+        self.writeBoolean(True) # ForcedDrops
 
         self.writeVInt(1)
         self.writeVInt(1)
         self.writeVInt(0)
         self.writeVInt(0)
+        # LogicServerCommand::encode
         self.writeVInt(0)
         self.writeVInt(0)
         self.writeLogicLong(0)
 
-
-
-
-
+    def getCommandType(self) -> int:
+        return 203
