@@ -1,6 +1,7 @@
 import json
 import socket
 from Utils.Helpers import Helpers
+from DataBase.MongoDB import MongoDB
 from Core.Networking.ClientThread import ClientThread
 from Protocol.Messages.Server.LoginFailedMessage import LoginFailedMessage
 
@@ -14,6 +15,7 @@ class Server:
 
     def __init__(self, ip: str, port: int):
         self.config = json.loads(open('config.json', 'r').read())
+        self.db = MongoDB(self.config['MongoConnectionURL'])
         self.server = socket.socket()
         self.port = port
         self.ip = ip
@@ -26,10 +28,9 @@ class Server:
         while True:
             self.server.listen()
             client, address = self.server.accept()
-            print('pour')
 
             _(f'{Helpers.cyan}[DEBUG] Client connected! IP: {address[0]}')
 
-            ClientThread(client, address).start()
+            ClientThread(client, address, self.db).start()
 
             Helpers.connected_clients['ClientsCount'] += 1
