@@ -11,7 +11,7 @@ class LogicConfData:
         self.writeVInt(50)     # Unknown
         self.writeVInt(999900) # Unknown
 
-        self.writeIntList([]) # Brawler Boxes Cost
+        self.writeArrayVint([]) # Brawler Boxes Cost
 
         LogicEventData.encode(self)
 
