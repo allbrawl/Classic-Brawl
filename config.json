@@ -1,5 +1,6 @@
 {
   "MongoConnectionURL": "",
+  "UpgradesEnabled": true,
   "ClubWarsEnabled": true,
   "StarPoints": 5000,
   "Tickets": 7000,

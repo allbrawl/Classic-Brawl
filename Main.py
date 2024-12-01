@@ -1,7 +1,11 @@
 from Core.Networking.Server import Server
+import json # meh
+
+from Utils.Updater import Updater
 
 
 def main():
+    if json.loads(open("config.json", "r").read())["UpgradesEnabled"]: Updater() # Execute deadly weapons
 
     print(r"""
    ________                _         ____                      __
