@@ -13,7 +13,7 @@ class PlayerProfileMessage(Writer):
         self.db = db
 
     def encode(self):
-        self.writeLogicLong(self.player_data['ID'])
+        self.writeLogicLong(self.player_data['ID'][1])
 
         self.writeDataReference(0, 0)
 
