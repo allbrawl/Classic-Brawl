@@ -112,7 +112,6 @@ class Updater:
         localHash = hashlib.sha256().hexdigest()
 
         for file in files:
-            print("https://raw.githubusercontent.com/PhoenixFire6934/Classic-Brawl/master/" + file)
             retrieved = requests.get("https://raw.githubusercontent.com/PhoenixFire6934/Classic-Brawl/master/" + file, stream=True) # stream=True splits into chunks in case of "big" files
             fileName = os.path.basename(file)
             if retrieved.status_code != 200:
