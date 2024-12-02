@@ -8,7 +8,7 @@ class LogicClientAvatar:
         self.writeVInt(0)
 
         for x in range(3):
-            self.writeLogicLong(self.player.ID)
+            self.writeLogicLong(self.player.ID[1])
 
         self.writeString(self.player.name)
         self.writeVInt(1)
