@@ -176,14 +176,13 @@ class Updater:
             gitHubFile: dict = self.readUpdateFileFromGitHub()
             if gitHubFile == {}: raise Exception("GitHub update data is null/empty. Are you sure you're connected to the Internet?")
 
-            if localFile.get("rV") == gitHubFile.get("rV"): # Compare versions
+            if localFile != gitHubFile:
                 print("Your server is up-to-date with the latest version of Classic Brawl! Continuing startup sequence...")
             else:
                 shouldUpdate: bool = "yes" in input(f"An update is available (Remote: {gitHubFile.get('rV')}, Local: {localFile['rV']})! (WARNING: This will update your changes to a file that is in the update file!) Would you like to update? (yes or no)? ").lower()
                 if shouldUpdate: self.downloadFiles(gitHubFile.get('f'))
                 self.writeUpdateFile(gitHubFile.get("fV"), gitHubFile.get("rV"), gitHubFile.get("f")) # Update to the newest version from git
-                print("Update has been completed. Your Classic Brawl server is up-to-date!\nContinuing startup sequence..")
-                self.updateInstalled = True
+                print("Update has been completed. Your Classic Brawl server is up-to-date!\nPlease restart your Classic Brawl server for changes to apply.")
 
         except Exception as e:
             print(f"Unable to perform an update. Error: {traceback.format_exc()}\nContinuing startup sequence...")

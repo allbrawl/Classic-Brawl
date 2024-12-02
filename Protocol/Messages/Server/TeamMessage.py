@@ -12,7 +12,7 @@ class TeamMessage(Writer):
         self.writeVInt(1)
         self.writeUInt8(0)
         self.writeVInt(1)
-        self.writeLongTest(0, Helpers().randomMapID())
+        self.writeLong(Helpers().randomMapID())
         self.writeUInt8(0)
         self.writeUInt8(0)
         self.writeVInt(0)
@@ -25,7 +25,7 @@ class TeamMessage(Writer):
 
             self.writeVInt(1)
 
-            self.writeLongTest(0, self.player.ID)
+            self.writeLong(self.player.ID)
 
             self.writeDataReference(16, self.player.home_brawler)
             self.writeDataReference(29, self.player.home_skin)
