@@ -1,3 +1,5 @@
+import traceback
+
 import requests, sys, time, os, hashlib, brotli, base64
 from ByteStream.Writer import Writer
 from ByteStream.Reader import Reader
@@ -117,8 +119,9 @@ class Updater:
         for file in files:
             retrieved = requests.get("https://raw.githubusercontent.com/PhoenixFire6934/Classic-Brawl/master/" + file, stream=True) # stream=True splits into chunks in case of "big" files
             fileName = os.path.basename(file)
+            print(retrieved.url)
             if retrieved.status_code != 200:
-                print(f"Unable to download {fileName}. Continuing..")
+                print(f"Unable to download {fileName} (statusCode: {retrieved.status_code}). Continuing..")
                 continue
 
             destination: str = file
@@ -126,7 +129,7 @@ class Updater:
             if os.path.exists(destination): localHash = self.getHash(destination)
             formattedSize: str = self.formatSize(fileSize)
 
-            with open(destination, mode="w", encoding="utf-8") as updated: # Open the file in write mode
+            with open(destination, mode="r+", encoding="utf-8") as updated: # Open the file in write mode
                 updated.seek(0)
                 spinnerLast = time.time()
 
@@ -148,6 +151,7 @@ class Updater:
                     if not os.path.exists("Logic/Backups/"): os.makedirs("Logic/Backups/")
                     # Compress the files so that they can be smaller, the rollback function will rewrite them
                     self.writeUpdateFile(0, destination, [base64.b85encode(brotli.compress(updated.read().encode("utf-8"))).decode("utf-8")], f"Logic/Backups/{fileName}") # why not?
+                    updated.seek(0)
                     updated.write(downloadedBytes.decode('utf-8'))
                     updated.flush()
                     sys.stdout.write(f"\rDownloading {fileName}.. Done!\n")
@@ -182,7 +186,7 @@ class Updater:
                 self.updateInstalled = True
 
         except Exception as e:
-            print(f"Unable to perform an update. Error: {e}\nContinuing startup sequence...")
+            print(f"Unable to perform an update. Error: {traceback.format_exc()}\nContinuing startup sequence...")
 
     def performRollback(self):
         """Updates files with ones that were previously working in case of an error"""
