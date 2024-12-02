@@ -1,17 +1,18 @@
+from ByteStream.Writer import Writer
 from Files.CsvLogic.Cards import Cards
 
 class LogicClientAvatar:
 
     @staticmethod
-    def encode(self):
+    def encode(self: Writer):
         self.writeVInt(0)
         self.writeVInt(0)
 
         for x in range(3):
-            self.writeLogicLong(self.player.ID[1])
+            self.writeLogicLong(self.player.ID)
 
         self.writeString(self.player.name)
-        self.writeVInt(1)
+        self.writeBoolean(self.player.name_set)
 
         self.writeInt(0)
 
@@ -67,8 +68,8 @@ class LogicClientAvatar:
             self.writeDataReference(16, x)
             self.writeVInt(0)
 
-        self.writeVInt(-66)  # Player Gems self.player.gems
-        self.writeVInt(self.player.gems)  # Player Free Gems
+        self.writeVInt(self.player.gems) # Player Gems
+        self.writeVInt(self.player.gems) # Player Free Gems
 
         self.writeVInt(0)
         self.writeVInt(0)

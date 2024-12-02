@@ -48,36 +48,30 @@ class Writer:
             self.buffer += bytes.fromhex(''.join(data.split()).replace('-', ''))
 
     def send(self):
-        try:
-            self.encode()
-            packet = self.buffer
-            self.buffer = self.id.to_bytes(2, 'big', signed=True)
-            self.writeInt(len(packet), 3)
-            if hasattr(self, 'version'):
-                self.writeInt16(self.version)
-            else:
-                self.writeInt16(0)
-            self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
-            self.client.send(self.buffer)
-            print(f'{Helpers.yellow}[SERVER] PacketID: {self.id}, Name: {type(self).__name__}, Length: {len(self.buffer)}')
-        except Exception:
-            print(traceback.format_exc())
+        self.encode()
+        packet = self.buffer
+        self.buffer = self.id.to_bytes(2, 'big', signed=True)
+        self.writeInt(len(packet), 3)
+        if hasattr(self, 'version'):
+            self.writeInt16(self.version)
+        else:
+            self.writeInt16(0)
+        self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
+        self.client.send(self.buffer)
+        print(f'{Helpers.yellow}[SERVER] PacketID: {self.id}, Name: {type(self).__name__}, Length: {len(self.buffer)}')
 
 
     def sendByID(self, ID):
-        try:
-            self.encode()
-            packet = self.buffer
-            self.buffer = self.id.to_bytes(2, 'big', signed=True)
-            self.writeInt(len(packet), 3)
-            if hasattr(self, 'version'):
-                self.writeInt16(self.version)
-            else:
-                self.writeInt16(0)
-            self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
-            Helpers.connected_clients["Clients"][str(ID)]["SocketInfo"].send(self.buffer)
-        except Exception:
-            print(traceback.format_exc())
+        self.encode()
+        packet = self.buffer
+        self.buffer = self.id.to_bytes(2, 'big', signed=True)
+        self.writeInt(len(packet), 3)
+        if hasattr(self, 'version'):
+            self.writeInt16(self.version)
+        else:
+            self.writeInt16(0)
+        self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
+        Helpers.connected_clients["Clients"][str(ID)]["SocketInfo"].send(self.buffer)
 
     def writeVInt(self, data, rotate: bool = True):
         final = b''

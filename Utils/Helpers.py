@@ -1,6 +1,4 @@
-import json
-import string
-import random
+import json, string, random
 from colorama import Fore
 
 class Helpers:
@@ -54,7 +52,7 @@ class Helpers:
             json.dump(settings, config_file)
 
     def load_account(self, player_data):
-        self.player.name_set = player_data['Registered']
+        self.player.name_set = player_data['NameSet']
         self.player.name = player_data['Name']
         self.player.trophies = player_data['Trophies']
         self.player.gems = player_data['Gems']

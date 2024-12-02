@@ -12,7 +12,6 @@ class OwnHomeDataMessage(Writer):
         self.time_stamp = int(datetime.timestamp(datetime.now()))
 
     def encode(self):
-
         LogicClientHome.encode(self)
         LogicClientAvatar.encode(self)
 

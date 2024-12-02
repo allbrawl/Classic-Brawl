@@ -1,21 +1,23 @@
-import requests, sys, time, os, hashlib
+import requests, sys, time, os, hashlib, brotli, base64
 from ByteStream.Writer import Writer
 from ByteStream.Reader import Reader
+from importlib.util import spec_from_file_location, module_from_spec
 
 class Updater:
     """A class dedicated to updating your Classic Brawl server to the latest version with ease."""
 
     def __init__(self, shouldStartUpdating: bool = True):
         """Initializes the Updater class and starts the update check sequence."""
+        self.updateInstalled: bool = False
         if shouldStartUpdating: self.checkForUpdates()
 
-    def writeUpdateFile(self, fileVersion: int, repoVersion: str, files: list):
-        """Writes the data for the update file that the upgrader uses.
+    def writeUpdateFile(self, fileVersion: int, repoVersion: str, files: list, fileLocation: str = "Logic/version"):
+        """Writes the data for the update file that the updater uses.
 
-        Parameters:
-            fileVersion (int): The version of the file that the reader will use
-            repoVersion (str): The version of the repository (each update will have a version number)
-            files (list): A list of the files location that were updated
+        :param fileLocation:
+        :param files:
+        :param repoVersion:
+        :param fileVersion:
         """
         byteStream = Writer(None)
         byteStream.writeInt(fileVersion, 1)
@@ -25,7 +27,7 @@ class Updater:
         for file in files:
             byteStream.writeString(file)
 
-        with open("Logic/version.cb", "wb+") as classicFile:
+        with open(fileLocation + ".cb", "wb+") as classicFile:
             classicFile.seek(0)
             classicFile.write(byteStream.buffer)
             classicFile.flush()
@@ -51,14 +53,15 @@ class Updater:
 
         return headerData
 
-    def readUpdateFile(self, debugOutput: bool = False):
+    def readUpdateFile(self, fileLocation: str = "Logic/version", debugOutput: bool = False):
         """Reads the update file written and compares it with the one in the Classic Brawl repository.
 
         Parameters:
             debugOutput (bool): Whether to output the header as a print in the console. False by default.
+            :param fileLocation:
         """
         headerData = {}
-        with open("Logic/version.cb", "rb") as classicFile:
+        with open(fileLocation + ".cb", "rb") as classicFile:
             classicFile.seek(0)
             reader = Reader(classicFile.read())
             headerData["fV"] = reader.readInt(1)  # File Version
@@ -142,6 +145,9 @@ class Updater:
                 if fileHash and localHash == fileHash.hexdigest():
                     sys.stdout.write(f"File {fileName} is already up-to-date")
                 else:
+                    if not os.path.exists("Logic/Backups/"): os.makedirs("Logic/Backups/")
+                    # Compress the files so that they can be smaller, the rollback function will rewrite them
+                    self.writeUpdateFile(0, destination, [base64.b85encode(brotli.compress(updated.read().encode("utf-8"))).decode("utf-8")], f"Logic/Backups/{fileName}") # why not?
                     updated.write(downloadedBytes.decode('utf-8'))
                     updated.flush()
                     sys.stdout.write(f"\rDownloading {fileName}.. Done!\n")
@@ -173,6 +179,39 @@ class Updater:
                 if shouldUpdate: self.downloadFiles(gitHubFile.get('f'))
                 self.writeUpdateFile(gitHubFile.get("fV"), gitHubFile.get("rV"), gitHubFile.get("f")) # Update to the newest version from git
                 print("Update has been completed. Your Classic Brawl server is up-to-date!\nContinuing startup sequence..")
+                self.updateInstalled = True
 
         except Exception as e:
             print(f"Unable to perform an update. Error: {e}\nContinuing startup sequence...")
+
+    def performRollback(self):
+        """Updates files with ones that were previously working in case of an error"""
+        if not os.path.exists("Utils/Backups"):
+            os.makedirs("Utils/Backups")
+            print("There are no backups to process")
+        filesUpdated = 0
+        for file in [entry for entry in os.listdir("Utils/Backups")]:
+            if not file.endswith(".cb"): continue # Don't count files without .cb extension
+            file = file.strip(".cb") # Remove .cb extension to prevent exceptions from reading the file
+            fileData = self.readUpdateFile("Utils/Backups/" + file) # Reading the backup file
+
+            if fileData == {}: continue # Skip to the next file if data is empty
+
+            if fileData.get("fV") != 0: continue # Check if it's a backup file, if not, skip to the next one
+            destination = fileData.get("rV")
+            fileData = brotli.decompress(base64.b85decode(fileData.get("f")[0])).decode("utf-8")
+            destinationFile = open(f"{destination}{file}", "w+")
+            destinationFile.seek(0)
+
+            if destinationFile.read() == fileData:
+                print(f"File {file} has not been changed, will skip")
+                destinationFile.close()
+                continue
+
+            destinationFile.write(fileData)
+            destinationFile.close()
+            print(f"File {file} has been roll-backed successfully!")
+            filesUpdated += 1
+
+        if filesUpdated != 0: print(f"Successfully roll-backed {filesUpdated} files!\nFor changes to apply, please restart your Classic Brawl server")
+        else: print("No files were roll-backed as they match with their backups.")

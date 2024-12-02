@@ -10,8 +10,8 @@ class LoginOkMessage(Writer):
         self.id = 20104
 
     def encode(self):
-        self.writeLong(self.account_id[1])
-        self.writeLong(self.account_id[1])
+        self.writeLong(self.account_id)
+        self.writeLong(self.account_id)
 
         self.writeString(self.account_token)
         self.writeString()

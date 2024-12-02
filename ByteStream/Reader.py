@@ -30,7 +30,7 @@ class Reader(BufferedReader):
         return int.from_bytes(self.read(length), "big")
 
     def readLong(self):
-        return [self.readInt(), self.readInt()]
+        return self.readInt(8) # 2 Ints, better implementation soon :)
     
     def readUInt8(self) -> int:
         return self.readUInteger()
