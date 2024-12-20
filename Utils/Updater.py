@@ -176,7 +176,7 @@ class Updater:
             gitHubFile: dict = self.readUpdateFileFromGitHub()
             if gitHubFile == {}: raise Exception("GitHub update data is null/empty. Are you sure you're connected to the Internet?")
 
-            if localFile != gitHubFile:
+            if localFile == gitHubFile:
                 print("Your server is up-to-date with the latest version of Classic Brawl! Continuing startup sequence...")
             else:
                 shouldUpdate: bool = "yes" in input(f"An update is available (Remote: {gitHubFile.get('rV')}, Local: {localFile['rV']})! (WARNING: This will update your changes to a file that is in the update file!) Would you like to update? (yes or no)? ").lower()
